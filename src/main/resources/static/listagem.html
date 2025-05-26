@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Boldonse&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <title>Listagem de Músicas</title>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        h1 {
+            text-align: center;
+            color: #343a40;
+        }
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .alert.success {
+            background-color: #28a745;
+            color: white;
+        }
+        .alert.error {
+            background-color: #dc3545;
+            color: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 20px;
+            border: 1px solid #ddd;
+            text-align: center;
+            border: none;
+        }
+        th {
+            background-color: #0080ff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        a {
+            display: inline-block;
+            margin: 10px 0;
+            padding: 10px 20px;
+            background-color: #3b954f;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        // Função para carregar músicas e exibir o sucesso
+        function carregarMusicas() {
+            fetch('/musicas')
+                .then(response => response.json())
+                .then(data => {
+                    const tabela = document.getElementById('tabelaMusicas');
+                    const mensagem = document.getElementById('mensagem');
+                    
+                    // Verifica se não há músicas e exibe a mensagem
+                    if (data.length === 0) {
+                        mensagem.style.display = 'block';
+                    } else {
+                        mensagem.style.display = 'none';
+                        tabela.innerHTML = ''; // Limpa a tabela antes de adicionar os dados
+                        data.forEach(musica => {
+                            const tr = document.createElement('tr');
+                            const dataCadastro = new Date(musica.dataCadastro);
+                            const dataFormatada = dataCadastro.toLocaleString('pt-BR', { 
+                                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', 
+                                hour: 'numeric', minute: 'numeric', second: 'numeric'
+                            });
+
+                            tr.innerHTML = `
+                                <td>${musica.id}</td>
+                                <td>${musica.titulo}</td>
+                                <td>${musica.artista}</td>
+                                <td>${musica.anoLancamento}</td>
+                                <td>${dataFormatada}</td>
+                            `;
+                            tabela.appendChild(tr);
+                        });
+                    }
+                })
+                .catch(error => console.error('Erro ao carregar músicas:', error));
+        }
+
+        // Chama a função quando a página for carregada
+        window.onload = function() {
+            carregarMusicas();
+            const successMessage = document.getElementById('successMessage');
+            if (successMessage) {
+                setTimeout(() => successMessage.style.display = 'none', 5000); // Ocultar mensagem após 5 segundos
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Listagem de Músicas</h1>
+        <h1 id="mensagem" style="display: none;">Não há músicas cadastradas</h1>
+
+        <div class="alert success" id="successMessage" style="display: none;">
+            Música incluída com sucesso!
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Artista</th>
+                    <th>Ano lançamento</th>
+                    <th>Data e Hora de Cadastro</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaMusicas">
+                <!-- As músicas serão carregadas aqui -->
+            </tbody>
+        </table>
+
+        <p>
+            <a href="formulario.html">+ Incluir Novo</a>
+        </p>
+    </div>
+</body>
+</html>

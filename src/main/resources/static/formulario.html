@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Boldonse&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <title>Incluir Nova Música</title>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        h1 {
+            text-align: center;
+            color: #343a40;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            font-size: 16px;
+            color: #495057;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input.invalid {
+            border: 1px solid red;
+        }
+        .mensagem-erro {
+            color: red;
+            font-size: 12px;
+            margin-top: -5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #3b954f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .cancelar {
+            background-color: #dc3545;
+        }
+    </style>
+    <script>
+        function enviarMusica() {
+            const titulo = document.getElementById('titulo').value;
+            const artista = document.getElementById('artista').value;
+            const anoLancamento = document.getElementById('anoLancamento').value;
+
+            let valid = true;
+
+            // Limpar mensagens de erro anteriores e campos inválidos
+            document.getElementById('tituloError').innerText = '';
+            document.getElementById('artistaError').innerText = '';
+            document.getElementById('anoLancamentoError').innerText = '';
+            document.getElementById('titulo').classList.remove('invalid');
+            document.getElementById('artista').classList.remove('invalid');
+            document.getElementById('anoLancamento').classList.remove('invalid');
+
+            // Validando se os campos estão vazios e exibindo as mensagens de erro
+            if (!titulo) {
+                document.getElementById('tituloError').innerText = 'Preencha o título da música';
+                document.getElementById('titulo').classList.add('invalid');
+                valid = false;
+            }
+            if (!artista) {
+                document.getElementById('artistaError').innerText = 'Preencha nome do artista';
+                document.getElementById('artista').classList.add('invalid');
+                valid = false;
+            }
+            if (!anoLancamento) {
+                document.getElementById('anoLancamentoError').innerText = 'Preencha o ano de lançamento da música';
+                document.getElementById('anoLancamento').classList.add('invalid');
+                valid = false;
+            }
+
+            // Se os campos estiverem válidos, envia o formulário
+            if (valid) {
+                const musica = {
+                    titulo: titulo,
+                    artista: artista,
+                    anoLancamento: anoLancamento
+                };
+
+                fetch('/musicas/novo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(musica)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Música cadastrada com sucesso!');
+                    window.location.href = 'listagem.html'; // Redireciona para a página de listagem
+                })
+                .catch(error => {
+                    console.error('Erro ao cadastrar música:', error);
+                    alert('Erro ao cadastrar música.');
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Incluir Nova Música</h1>
+        <form onsubmit="event.preventDefault(); enviarMusica();">
+            <div>
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo"/>
+                <div id="tituloError" class="mensagem-erro"></div>
+            </div>
+            <div>
+                <label for="artista">Artista:</label>
+                <input type="text" id="artista" />
+                <div id="artistaError" class="mensagem-erro"></div>
+            </div>
+            <div>
+                <label for="anoLancamento">Ano de Lançamento:</label>
+                <input type="number" id="anoLancamento" />
+                <div id="anoLancamentoError" class="mensagem-erro"></div>
+            </div>
+            <div>
+                <button type="submit">Enviar</button>
+                <a href="listagem.html"><button type="button" class="cancelar">Cancelar</button></a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
